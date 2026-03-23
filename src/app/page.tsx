@@ -192,6 +192,74 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Before & After */}
+      <section className="py-16 px-4">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-4">
+            Before &amp; After
+          </h2>
+          <p className="text-gray-600 text-center max-w-xl mx-auto mb-12">
+            Green to clean. This is what we do.
+          </p>
+          <div className="space-y-8">
+            {/* Pair 1 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative rounded-xl overflow-hidden shadow-md">
+                <Image
+                  src="/images/gallery/pool-06.jpg"
+                  alt="Green pool before cleaning"
+                  width={600}
+                  height={800}
+                  className="w-full h-64 object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  BEFORE
+                </span>
+              </div>
+              <div className="relative rounded-xl overflow-hidden shadow-md">
+                <Image
+                  src="/images/gallery/pool-05.jpg"
+                  alt="Crystal clear pool after cleaning"
+                  width={600}
+                  height={800}
+                  className="w-full h-64 object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  AFTER
+                </span>
+              </div>
+            </div>
+            {/* Pair 2 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative rounded-xl overflow-hidden shadow-md">
+                <Image
+                  src="/images/gallery/pool-11.jpg"
+                  alt="Swamp-green neglected pool before service"
+                  width={600}
+                  height={800}
+                  className="w-full h-64 object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  BEFORE
+                </span>
+              </div>
+              <div className="relative rounded-xl overflow-hidden shadow-md">
+                <Image
+                  src="/images/gallery/pool-10.jpg"
+                  alt="Same pool restored to crystal clear water"
+                  width={600}
+                  height={800}
+                  className="w-full h-64 object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  AFTER
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Service areas */}
       <section className="py-16 px-4">
         <div className="mx-auto max-w-4xl text-center">

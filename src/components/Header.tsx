@@ -14,13 +14,16 @@ export default function Header() {
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/images/logo.svg"
+              src="/images/logo-mascot.jpg"
               alt="Pool Cleaning Dude"
               width={160}
-              height={48}
-              className="h-10 w-auto"
+              height={160}
+              className="h-12 w-12 rounded-lg"
               priority
             />
+            <span className="text-lg font-bold text-sky-700 hidden sm:inline">
+              Pool Cleaning Dude
+            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -32,7 +35,13 @@ export default function Header() {
               Services
             </Link>
             <Link
-              href="/areas/newark-de"
+              href="/gallery"
+              className="text-sm font-medium text-gray-700 hover:text-sky-600 transition-colors"
+            >
+              Our Work
+            </Link>
+            <Link
+              href="/areas/gladwyne-pa"
               className="text-sm font-medium text-gray-700 hover:text-sky-600 transition-colors"
             >
               Service Areas
@@ -100,7 +109,14 @@ export default function Header() {
               Services
             </Link>
             <Link
-              href="/areas/newark-de"
+              href="/gallery"
+              onClick={() => setOpen(false)}
+              className="block text-sm font-medium text-gray-700"
+            >
+              Our Work
+            </Link>
+            <Link
+              href="/areas/gladwyne-pa"
               onClick={() => setOpen(false)}
               className="block text-sm font-medium text-gray-700"
             >
