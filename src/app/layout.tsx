@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
-import Analytics from "@/components/Analytics";
+// import Analytics from "@/components/Analytics"; // TODO: uncomment after PCD-specific analytics IDs are created
 import { localBusinessSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/config";
 
@@ -45,7 +45,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col font-sans">
-        <Analytics />
+        {/* <Analytics /> */}
         <JsonLd data={localBusinessSchema()} />
         <Header />
         <main className="flex-1">{children}</main>
