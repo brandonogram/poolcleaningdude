@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const GTM_ID = "GTM-WK69CW77";
+const GA4_ID = "G-HS91JX3MHT";
 const META_PIXEL_ID = "1450089306162928";
 const POSTHOG_KEY = "phc_coeTLrzdu6Sa1QamyXR3ysiKdlagXCT322TPjRDDxUU";
 
@@ -50,6 +51,16 @@ export default function Analytics() {
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','${GTM_ID}');`}
+      </Script>
+
+      {/* GA4 */}
+      <Script
+        id="ga4"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="ga4-config" strategy="afterInteractive">
+        {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');`}
       </Script>
 
       {/* Meta Pixel - init stub then load script */}
