@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 import CTABanner from "@/components/CTABanner";
 
@@ -99,6 +100,17 @@ export default function Home() {
             >
               Get a Free Quote
             </Link>
+          </div>
+          {/* Van photo */}
+          <div className="mt-12 mx-auto max-w-2xl">
+            <Image
+              src="/images/pcd-van.jpg"
+              alt="Pool Cleaning Dude service van"
+              width={940}
+              height={627}
+              className="rounded-2xl shadow-2xl border-2 border-white/20"
+              priority
+            />
           </div>
         </div>
         <WaveDecoration />

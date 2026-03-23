@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { siteConfig } from "@/lib/config";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbSchema } from "@/lib/schema";
@@ -37,6 +38,17 @@ export default function AboutPage() {
 
       <section className="py-16 px-4">
         <div className="mx-auto max-w-3xl space-y-8">
+          {/* Brandon photo */}
+          <div className="flex justify-center">
+            <Image
+              src="/images/brandon-pool.jpg"
+              alt="Brandon Calloway, owner of Pool Cleaning Dude, poolside"
+              width={160}
+              height={160}
+              className="rounded-full shadow-lg border-4 border-sky-100 w-32 h-32 object-cover"
+            />
+          </div>
+
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-3">
               The Short Version
