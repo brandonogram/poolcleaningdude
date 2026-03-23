@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 60" fill="none">
+  <!-- Water wave decoration -->
+  <path d="M0 42 Q10 36, 20 42 T40 42 T60 42 T80 42 T100 42" stroke="#0ea5e9" stroke-width="2.5" fill="none" opacity="0.3"/>
+  <path d="M0 48 Q10 42, 20 48 T40 48 T60 48 T80 48 T100 48" stroke="#0ea5e9" stroke-width="2" fill="none" opacity="0.2"/>
+
+  <!-- Pool water drop icon -->
+  <g transform="translate(8, 4)">
+    <path d="M18 4 C18 4 6 18 6 26 C6 32.627 11.373 38 18 38 C24.627 38 30 32.627 30 26 C30 18 18 4 18 4Z" fill="url(#dropGrad)" />
+    <ellipse cx="18" cy="28" rx="8" ry="3" fill="#ffffff" opacity="0.3"/>
+    <circle cx="14" cy="20" r="2" fill="#ffffff" opacity="0.4"/>
+  </g>
+
+  <!-- "Pool Cleaning" text - casual style -->
+  <text x="48" y="24" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" fill="#0284c7" letter-spacing="-0.5">Pool Cleaning</text>
+
+  <!-- "Dude" text - larger, bolder, fun -->
+  <text x="48" y="48" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900" fill="#0c4a6e" letter-spacing="-0.5">Dude</text>
+
+  <!-- Sparkle accent -->
+  <g transform="translate(103, 30)" fill="#0ea5e9" opacity="0.7">
+    <path d="M0 -5 L1.5 -1.5 L5 0 L1.5 1.5 L0 5 L-1.5 1.5 L-5 0 L-1.5 -1.5 Z"/>
+  </g>
+
+  <defs>
+    <linearGradient id="dropGrad" x1="18" y1="4" x2="18" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+</svg>
