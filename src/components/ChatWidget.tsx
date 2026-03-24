@@ -129,7 +129,7 @@ export default function ChatWidget() {
                 Pool Cleaning Dude
               </p>
               <p className="text-sky-200 text-xs">
-                Your pool guy, at your service
+                Your Pool Dude, at Your Service
               </p>
             </div>
             <button
