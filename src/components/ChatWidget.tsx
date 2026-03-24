@@ -9,9 +9,9 @@ interface Message {
 }
 
 const GREETINGS = [
-  "Hey! Pool season is coming up. You looking at a pool opening, weekly cleaning, or something else?",
-  "Hey there! Need help with your pool this season?",
-  "What's up! Got a pool question? Fire away.",
+  "Spring slots are filling up. Is your pool opening scheduled yet?",
+  "Pool season is almost here. Is your pool ready?",
+  "Hey! We're booking pool openings now. Spots go fast once it warms up.",
 ];
 
 export default function ChatWidget() {
