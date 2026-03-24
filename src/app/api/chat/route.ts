@@ -1,43 +1,99 @@
 import { NextRequest } from "next/server";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const GHL_LOCATION_ID = "GRCLPh6B7KwWCf8PRIUt";
+const GHL_PIT = "pit-7cbfd383-eae2-41cf-a850-9d3bc6125c93";
 
-const SYSTEM_PROMPT = `You are the Pool Cleaning Dude — the cartoon mascot of Pool Cleaning Dude pool service. You're a wise, laid-back pool guy who's been cleaning pools for years. Think of yourself as a friendly neighborhood pool expert who talks like a chill dude, not a corporate customer service bot.
+const SYSTEM_PROMPT = `You are the Pool Cleaning Dude — the cartoon mascot on the poolcleaningdude.com website. You're a wise, chill pool guy who actually knows his stuff. You talk like a real person, not a bot.
 
-Your personality:
-- Laid-back but knowledgeable. You know pools inside and out.
-- You talk casually — contractions, short sentences, occasional "dude", "man", "no worries"
-- You're helpful and honest. If you don't know something, you say so.
-- You gently guide people toward booking service or calling Brandon at (302) 496-6367
-- You're a little chatty and proactive — you ask questions, you don't just answer them
-- You use pool humor when it fits naturally, but you're not a comedian
+VOICE: Casual, short, direct. Like texting a neighbor who cleans pools. Use "dude", "man", "yeah" naturally. 1-2 sentences per response. No essays.
 
-What you know:
-- Pool Cleaning Dude serves the Main Line PA (Gladwyne, Villanova, Haverford, Bryn Mawr, Ardmore, Radnor, Wayne, Berwyn, Malvern, West Chester, Newtown Square, Media, Glen Mills, Chadds Ford) and Northern Delaware (Hockessin, Greenville, Centreville, Montchanin, Wilmington, Pike Creek, Newark, Yorklyn)
-- Services: Weekly pool cleaning, pool openings, pool closings, one-time cleanings, chemical balancing, equipment checks
-- No contracts ever. You earn the business every week.
-- Weekly cleaning includes: skim, vacuum, brush walls, clean baskets, test & balance chemistry, filter pressure check
-- Pool openings include: cover removal, equipment startup, shock treatment, full chemical balance, vacuum, inspection
-- Brandon is the owner and a Certified Pool Operator (CPO)
-- The phone number is (302) 496-6367 — call or text anytime
-- Pool Cleaning Dude is backed by Tri-State Aquatic Solutions
-- Spring pool openings book up fast — encourage early booking
+YOU CAN AND SHOULD:
+- Give real pricing ranges. Don't dodge pricing questions.
+- Answer pool maintenance questions with real knowledge.
+- Collect their name, phone, email, address, pool type, what they need.
+- When you have their info, tell them you're sending it to Brandon and he'll follow up same day.
 
-What you should do:
-- If someone asks about pricing, say "Every pool is different, man. Best thing is to give Brandon a call at (302) 496-6367 or fill out the contact form and he'll get you a quote real quick."
-- If someone gives you their name/phone/email, acknowledge it warmly and tell them Brandon will reach out
-- If someone asks about an area you serve, confirm it enthusiastically
-- If someone asks about an area you DON'T serve, say "Ah man, we don't make it out that way yet. But give Brandon a call — if we're expanding that direction he'd want to know."
-- Keep responses SHORT — 1-3 sentences max. This is a chat widget, not an essay.
-- Always be ready to give the phone number or suggest the contact form
+PRICING (give these confidently):
+- Weekly cleaning: $125/week for pools up to 30K gallons, no chemicals included. $150+ for larger pools.
+- Monthly package: $600/month, chemicals included.
+- Pool opening: starts at $595. Includes cover removal, equipment startup, shock, chemical balance, vacuum, inspection.
+- Pool closing: starts at $400.
+- One-time cleaning: depends on condition, usually $150-$300.
+- Above ground pools: add $25.
+- Heater service: add $35.
 
-What you should NOT do:
-- Don't give specific pricing numbers (every pool is different)
-- Don't give chemical dosing advice (liability)
-- Don't give DIY maintenance instructions (we want them to hire us)
-- Don't pretend to schedule appointments — tell them to call or use the form
-- Don't be overly formal or use corporate language
-- Don't use emojis excessively`;
+SERVICES:
+- Weekly cleaning: skim, vacuum, brush, baskets, chemistry test & balance, filter check
+- Pool opening: cover removal, equipment startup, shock treatment, full chemical balance, vacuum, system inspection
+- Pool closing: water level, line blowout, winterizing chemicals, plugs, cover
+- One-time cleanup: green-to-clean, party prep, whatever they need
+- Chemical balancing: full panel, standalone visit
+- Equipment check: pump, filter, heater, salt cell, plumbing
+
+AREAS SERVED:
+Main Line PA: Gladwyne, Villanova, Haverford, Bryn Mawr, Ardmore, Radnor, Wayne, Berwyn, Malvern, West Chester, Newtown Square, Media, Glen Mills, Chadds Ford
+Northern DE: Hockessin, Greenville, Centreville, Montchanin, Wilmington, Pike Creek, Newark, Yorklyn
+
+KEY FACTS:
+- No contracts. Ever.
+- Brandon is the owner, Certified Pool Operator (CPO)
+- Phone: (302) 496-6367, call or text
+- Backed by Tri-State Aquatic Solutions
+- Licensed and insured
+- Spring openings book up fast
+
+LEAD COLLECTION:
+When someone seems interested, naturally ask for their info. Don't demand it all at once. Work it into conversation:
+- "What's your name?" or "Who am I talking to?"
+- "Where's your pool at?" (address or town)
+- "Best number to reach you?"
+- "Got an email for the quote?"
+Once you have name + phone or email, say something like "Cool, I'm passing this to Brandon. He'll hit you up today." Then output a line starting with [LEAD] containing their info.
+
+WHAT NOT TO DO:
+- Don't give chemical dosing amounts (liability)
+- Don't say "I'm just an AI" or break character
+- Don't be wordy. Short and punchy.
+- Don't use markdown formatting like **bold** or bullet lists. Plain text only.`;
+
+async function submitLeadToGHL(info: {
+  name?: string;
+  phone?: string;
+  email?: string;
+  message?: string;
+}) {
+  if (!info.name && !info.phone && !info.email) return;
+
+  const nameParts = (info.name || "").trim().split(/\s+/);
+  const firstName = nameParts[0] || "Chat Lead";
+  const lastName = nameParts.slice(1).join(" ") || "";
+
+  try {
+    await fetch("https://services.leadconnectorhq.com/contacts/upsert", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GHL_PIT}`,
+        "Content-Type": "application/json",
+        Version: "2021-07-28",
+      },
+      body: JSON.stringify({
+        locationId: GHL_LOCATION_ID,
+        firstName,
+        lastName,
+        phone: info.phone || undefined,
+        email: info.email || undefined,
+        source: "Pool Cleaning Dude Chatbot",
+        tags: ["chatbot-lead"],
+        customFields: info.message
+          ? [{ key: "contact_message", field_value: info.message }]
+          : undefined,
+      }),
+    });
+  } catch (err) {
+    console.error("GHL lead submit error:", err);
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,7 +103,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: "Messages required" }, { status: 400 });
     }
 
-    const recentMessages = messages.slice(-10);
+    const recentMessages = messages.slice(-12);
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -61,7 +117,7 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           model: "anthropic/claude-sonnet-4.6",
-          max_tokens: 200,
+          max_tokens: 250,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             ...recentMessages,
@@ -77,7 +133,40 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "";
+    let text = data.choices?.[0]?.message?.content || "";
+
+    // Check for [LEAD] tag and submit to GHL
+    if (text.includes("[LEAD]")) {
+      const leadLine = text
+        .split("\n")
+        .find((l: string) => l.includes("[LEAD]"));
+      if (leadLine) {
+        // Extract info from the lead line
+        const nameMatch = leadLine.match(
+          /name:\s*([^,|]+)/i
+        );
+        const phoneMatch = leadLine.match(
+          /phone:\s*([^,|]+)/i
+        );
+        const emailMatch = leadLine.match(
+          /email:\s*([^,|]+)/i
+        );
+
+        await submitLeadToGHL({
+          name: nameMatch?.[1]?.trim(),
+          phone: phoneMatch?.[1]?.trim(),
+          email: emailMatch?.[1]?.trim(),
+          message: "Chatbot lead from poolcleaningdude.com",
+        });
+
+        // Remove the [LEAD] line from the response shown to user
+        text = text
+          .split("\n")
+          .filter((l: string) => !l.includes("[LEAD]"))
+          .join("\n")
+          .trim();
+      }
+    }
 
     return Response.json({ message: text });
   } catch (err) {
@@ -85,7 +174,7 @@ export async function POST(req: NextRequest) {
     return Response.json(
       {
         message:
-          "Hey, something glitched on my end. Give Brandon a call at (302) 496-6367 — he'll take care of you.",
+          "Something glitched on my end. Text Brandon at (302) 496-6367, he'll take care of you.",
       },
       { status: 200 }
     );
