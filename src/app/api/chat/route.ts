@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
           "X-Title": "Pool Cleaning Dude Chatbot",
         },
         body: JSON.stringify({
-          model: "anthropic/claude-haiku-4.5",
+          model: "anthropic/claude-sonnet-4.6",
           max_tokens: 200,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
