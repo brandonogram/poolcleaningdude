@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import Analytics from "@/components/Analytics";
+import ChatWidget from "@/components/ChatWidget";
 import { localBusinessSchema } from "@/lib/schema";
 import { siteConfig } from "@/lib/config";
 
@@ -50,6 +51,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <ChatWidget />
       </body>
     </html>
   );
