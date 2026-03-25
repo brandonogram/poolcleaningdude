@@ -200,32 +200,75 @@ export async function POST(req: NextRequest) {
     const data = await response.json();
     let text = data.choices?.[0]?.message?.content || "";
 
-    // Check for [LEAD] tag and submit to GHL
+    // Strip [LEAD] tag from response if model outputs one
     if (text.includes("[LEAD]")) {
-      const leadLine = text
+      text = text
         .split("\n")
-        .find((l: string) => l.includes("[LEAD]"));
-      if (leadLine) {
-        const nameMatch = leadLine.match(/name:\s*([^|]+)/i);
-        const phoneMatch = leadLine.match(/phone:\s*([^|]+)/i);
-        const emailMatch = leadLine.match(/email:\s*([^|]+)/i);
-        const addressMatch = leadLine.match(/address:\s*([^|]+)/i);
-        const serviceMatch = leadLine.match(/service:\s*([^|]+)/i);
+        .filter((l: string) => !l.includes("[LEAD]"))
+        .join("\n")
+        .trim();
+    }
 
-        await submitLeadToGHL({
-          name: nameMatch?.[1]?.trim(),
-          phone: phoneMatch?.[1]?.trim(),
-          email: emailMatch?.[1]?.trim(),
-          address: addressMatch?.[1]?.trim(),
-          service: serviceMatch?.[1]?.trim(),
-        });
+    // Server-side lead detection: scan all user messages for phone numbers
+    // Submit to GHL as soon as we detect a phone number in the conversation
+    const allUserText = recentMessages
+      .filter((m: { role: string }) => m.role === "user")
+      .map((m: { content: string }) => m.content)
+      .join(" ");
 
-        text = text
-          .split("\n")
-          .filter((l: string) => !l.includes("[LEAD]"))
-          .join("\n")
-          .trim();
-      }
+    const phoneRegex = /(\+?1?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4})/;
+    const phoneMatch = allUserText.match(phoneRegex);
+
+    if (phoneMatch) {
+      // Look at the assistant messages before each user message to understand context
+      // Find name: a short alpha-only message that comes after the bot asked for a name
+      const serviceKeywords = /^(open|opening|clean|cleaning|clos|closing|weekly|one.time|maintenance|service|quote)/i;
+      const nameMsg = recentMessages.find(
+        (m: { role: string; content: string }, i: number) =>
+          m.role === "user" &&
+          /^[a-zA-Z\s'-]{2,30}$/.test(m.content.trim()) &&
+          m.content.trim().split(/\s+/).length <= 3 &&
+          !serviceKeywords.test(m.content.trim()) &&
+          i > 0 &&
+          recentMessages[i - 1]?.role === "assistant" &&
+          /name/i.test(recentMessages[i - 1]?.content || "")
+      );
+
+      // Extract address: messages with street numbers
+      const addressMsg = recentMessages.find(
+        (m: { role: string; content: string }) =>
+          m.role === "user" &&
+          /\d+\s+[a-zA-Z]/.test(m.content) &&
+          !phoneRegex.test(m.content) &&
+          !/\d{5}/.test(m.content) &&
+          m.content.length > 5
+      );
+
+      // Find city/zip message
+      const cityMsg = recentMessages.find(
+        (m: { role: string; content: string }) =>
+          m.role === "user" &&
+          /\d{5}|hockessin|gladwyne|villanova|haverford|bryn mawr|ardmore|radnor|wayne|berwyn|malvern|west chester|newtown|media|glen mills|chadds|greenville|centreville|montchanin|wilmington|pike creek|newark|yorklyn/i.test(m.content) &&
+          !phoneRegex.test(m.content)
+      );
+
+      // Extract service
+      const serviceMsg = recentMessages.find(
+        (m: { role: string; content: string }) =>
+          m.role === "user" &&
+          /open|clean|clos|weekly|one.time|maintenance/i.test(m.content)
+      );
+
+      const addressParts = [addressMsg?.content, cityMsg?.content].filter(Boolean);
+      // Deduplicate if cityMsg is same as addressMsg
+      const address = [...new Set(addressParts)].join(", ");
+
+      await submitLeadToGHL({
+        name: nameMsg?.content?.trim(),
+        phone: phoneMatch[1].replace(/[-.\s()]/g, ""),
+        address: address || undefined,
+        service: serviceMsg?.content?.trim(),
+      });
     }
 
     return Response.json({ message: text });
