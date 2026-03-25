@@ -9,7 +9,11 @@ export default function OpenChatButton({
 }) {
   return (
     <button
-      onClick={() => window.dispatchEvent(new Event("open-chat"))}
+      onClick={() =>
+        window.dispatchEvent(
+          new CustomEvent("open-chat", { detail: { context: "quote" } })
+        )
+      }
       className={className}
     >
       {children}

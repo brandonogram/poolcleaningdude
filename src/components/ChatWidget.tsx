@@ -46,7 +46,19 @@ export default function ChatWidget() {
 
   // Listen for external open-chat events
   useEffect(() => {
-    const handler = () => setOpen(true);
+    const handler = (e: Event) => {
+      const context = (e as CustomEvent).detail?.context;
+      if (context === "quote") {
+        setMessages([
+          {
+            role: "assistant",
+            content:
+              "Let's get you a quote. What service do you need — pool opening, weekly cleaning, or something else?",
+          },
+        ]);
+      }
+      setOpen(true);
+    };
     window.addEventListener("open-chat", handler);
     return () => window.removeEventListener("open-chat", handler);
   }, []);
