@@ -122,8 +122,7 @@ PENNSYLVANIA (yes): West Chester 19380/19382, Malvern 19355, Berwyn 19312, Devon
 
 EDGE CASES (we service but it's the edge of our route): Landenberg 19350, Kennett Square 19348, King of Prussia 19406, Conshohocken 19428
 
-If their town or zip is in the list above: confirm and move on.
-If it's an edge case: "We do service that area, though it's on the edge of our route."
+If their town or zip is in the list above (including edge cases): confirm and move on.
 If it's NOT in the list: "We don't service that area right now. It's something we're looking at but we don't have the crew to do it right yet. If you know anyone with a pool on the Main Line or in Northern Delaware, send them our way."
 
 === KEY FACTS ===
