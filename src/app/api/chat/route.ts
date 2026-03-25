@@ -8,7 +8,9 @@ const GHL_PIT = "pit-7cbfd383-eae2-41cf-a850-9d3bc6125c93";
 // ~/projects/workbench/tristateaquaticsolutions/pricing/service-pricing.md
 // ~/projects/workbench/tristateaquaticsolutions/pricing/value-articulation.md
 // PCD and TSAS share the same pricing. PCD does not do pool construction.
-// Last synced: 2026-03-24
+// Last synced: 2026-03-25
+// NOTE: service-area-towns.csv is updated over time. Re-sync the AREAS SERVED
+// section and the cityMsg regex whenever that file changes.
 
 const SYSTEM_PROMPT = `You are the Pool Cleaning Dude chatbot on poolcleaningdude.com. You're the cartoon mascot — a chill pool guy. Friendly, casual, direct.
 
@@ -112,11 +114,17 @@ Always Swim-Ready Guarantee: pool not perfect on any visit day, we come back wit
 - Neighbor Network: $25/mo off per neighbor on the same street who signs up. Max $100/mo off.
 
 === AREAS SERVED ===
-Main Line PA: Gladwyne, Villanova, Haverford, Bryn Mawr, Ardmore, Radnor, Wayne, Berwyn, Malvern, West Chester, Newtown Square, Media, Glen Mills, Chadds Ford
-Northern DE: Hockessin, Greenville, Centreville, Montchanin, Wilmington, Pike Creek, Newark, Yorklyn
+Source: tristateaquaticsolutions/service-area/service-area-towns.csv
 
-In our area: confirm simply and move on.
-Not in our area: "We don't service that area right now. It's something we're looking at but we don't have the crew to do it right yet. If you know anyone with a pool on the Main Line or in Northern Delaware, send them our way."
+DELAWARE (yes): Claymont 19703, Wilmington 19801-19810, Hockessin 19707, Newark 19711/19713, Pike Creek 19808, Bear 19701, New Castle 19720, Greenville 19807, Montchanin 19710, Yorklyn 19736, Centreville 19807, Elsmere 19805, Stanton 19804, Marshallton 19808, Talleyville 19803, North Star 19711, Rockland 19732, Arden 19810, Brookside 19713, Newport 19804
+
+PENNSYLVANIA (yes): West Chester 19380/19382, Malvern 19355, Berwyn 19312, Devon 19333, Paoli 19301, Exton 19341, Chadds Ford 19317, Glen Mills 19342, Garnet Valley 19060, Concordville 19331, Media 19063, Swarthmore 19081, Wallingford 19086, Newtown Square 19073, Springfield 19064, Drexel Hill 19026, Broomall 19008, Haverford 19041, Havertown 19083, Radnor 19087, Wayne 19087, Villanova 19085, Bryn Mawr 19010, Gladwyne 19035, Ardmore 19003, Wynnewood 19096, Merion Station 19066, Narberth 19072, Bala Cynwyd 19004, Rosemont 19010, Strafford 19087, Lansdowne 19050, Upper Darby 19082, Ridley Park 19078, Chester 19013, Chester Heights 19017, Aston 19014, Brookhaven 19015, Rose Valley 19063, Thornton 19373, Boothwyn 19061, Edgmont 19028, Gradyville 19039, Lima 19037, Wawa 19063, Folsom 19033, Glenolden 19036, Norwood 19074, Prospect Park 19076, Morton 19070, Collingdale 19023, Sharon Hill 19079, Yeadon 19050, Pocopson 19366, Westtown 19395, Thornbury 19342
+
+EDGE CASES (we service but it's the edge of our route): Landenberg 19350, Kennett Square 19348, King of Prussia 19406, Conshohocken 19428
+
+If their town or zip is in the list above: confirm and move on.
+If it's an edge case: "We do service that area, though it's on the edge of our route."
+If it's NOT in the list: "We don't service that area right now. It's something we're looking at but we don't have the crew to do it right yet. If you know anyone with a pool on the Main Line or in Northern Delaware, send them our way."
 
 === KEY FACTS ===
 - No contracts. Ever.
@@ -274,7 +282,7 @@ export async function POST(req: NextRequest) {
       const cityMsg = recentMessages.find(
         (m: { role: string; content: string }) =>
           m.role === "user" &&
-          /\d{5}|hockessin|gladwyne|villanova|haverford|bryn mawr|ardmore|radnor|wayne|berwyn|malvern|west chester|newtown|media|glen mills|chadds|greenville|centreville|montchanin|wilmington|pike creek|newark|yorklyn/i.test(
+          /\d{5}|hockessin|gladwyne|villanova|haverford|havertown|bryn mawr|ardmore|radnor|wayne|berwyn|malvern|west chester|newtown|media|glen mills|chadds|greenville|centreville|montchanin|wilmington|pike creek|newark|yorklyn|claymont|bear|new castle|elsmere|stanton|marshallton|talleyville|rockland|arden|newport|devon|paoli|exton|garnet valley|concordville|swarthmore|wallingford|springfield|drexel hill|broomall|wynnewood|merion|narberth|bala cynwyd|rosemont|strafford|lansdowne|upper darby|ridley park|chester|aston|brookhaven|thornton|boothwyn|edgmont|gradyville|lima|wawa|folsom|glenolden|norwood|prospect park|morton|collingdale|sharon hill|yeadon|pocopson|westtown|thornbury|kennett|king of prussia|conshohocken/i.test(
             m.content
           ) &&
           !phoneRegex.test(m.content)
