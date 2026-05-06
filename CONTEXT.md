@@ -1,7 +1,7 @@
 # Pool Cleaning Dude — Website
 
 ## What This Is
-Website for poolcleaningdude.com. Built with Next.js 16 + Tailwind CSS 4, deployed to Vercel. Replaced the old GoHighLevel funnel site.
+Website for poolcleaningdude.com. Built with Next.js 16 + Tailwind CSS 4, deployed to Cloudflare Workers via `@opennextjs/cloudflare`. Replaced the old GoHighLevel funnel site.
 
 ## Brand Identity
 Pool Cleaning Dude is the **maintenance/service sub-brand** of Tri-State Aquatic Solutions. Voice is informal, friendly, no-nonsense — "your pool guy, not a corporation." No contracts, honest pricing, local. The opposite of TSAS's premium/professional positioning.
@@ -11,11 +11,12 @@ Pool Cleaning Dude is the **maintenance/service sub-brand** of Tri-State Aquatic
 - **Secondary:** Northern Delaware (Hockessin, Greenville, Centreville, Montchanin, Wilmington, Pike Creek, Newark, Yorklyn)
 - Majority of revenue expected from Main Line PA
 
-## Current State (2026-03-23)
-- **Status:** LIVE at poolcleaningdude.com
-- **Hosting:** Vercel (manual CLI deploy, GitHub auto-deploy needs Vercel app repo access)
+## Current State (2026-05-06)
+- **Status:** LIVE at poolcleaningdude.com (migrated off Vercel today; Brandon cancelled Vercel)
+- **Hosting:** Cloudflare Workers (account `a674fb068af8a009d9efe474a27b01b1`, worker `poolcleaningdude`, preview URL `https://poolcleaningdude.poolops-bryce.workers.dev`)
+- **Deploy:** `npm run cf:build && npm run cf:deploy` (manual, GitHub auto-deploy not yet wired)
 - **GitHub:** https://github.com/brandonbot67/poolcleaningdude
-- **DNS:** GoDaddy, A record → 76.76.21.21, www CNAME → cname.vercel-dns.com
+- **DNS:** Cloudflare nameservers (`scott.ns.cloudflare.com`, `samara.ns.cloudflare.com`); zone `53a762f715b8d3b3667b23601281ecf7`. Apex + www are Workers Custom Domains — DNS auto-managed by Cloudflare.
 - **Pages:** 27 total (homepage, services, contact-us, pool-opening, about, 22 area pages)
 - **Contact form:** Wired to GHL PCD sub-account (location: GRCLPh6B7KwWCf8PRIUt)
 - **GHL Login:** brandonbot67@gmail.com (NOT brandon@boothlaunchpad.com — that email has no MX records)
@@ -41,7 +42,9 @@ Pool Cleaning Dude is the **maintenance/service sub-brand** of Tri-State Aquatic
 - `src/components/ContactForm.tsx` — Form → /api/contact → GHL upsert
 - `src/app/api/contact/route.ts` — GHL contact upsert API route
 - `src/app/layout.tsx` — Root layout with Header, Footer, Analytics, schema
-- `next.config.ts` — Redirects and security headers
+- `next.config.ts` — Redirects + security headers + OpenNext dev hook
+- `wrangler.jsonc` — Cloudflare Worker config (bindings, compatibility flags, custom domain routes)
+- `open-next.config.ts` — OpenNext Cloudflare adapter config
 
 ## Decisions
 - **URL structure matches old site** — `/contact-us` not `/contact`, `/pool-opening` stays
@@ -52,9 +55,26 @@ Pool Cleaning Dude is the **maintenance/service sub-brand** of Tri-State Aquatic
 - **posthog-js npm package** — inline snippet caused hydration crash, npm package works
 - **Contact form POSTs to API route** — prevents PII in URL (Meta Pixel compliance)
 
+## Recent Marketing Update (2026-03-27)
+- Marlo created a new spring lead-gen asset set for immediate use once Brandon gives GO on pool outreach.
+- Deliverable: 1 Facebook concept with A/B hook variants targeting DIY-Tired Dave.
+- Winning angle on paper: getting Saturdays back instead of spending the first warm weekend fighting the pool cover and chemicals.
+- Positioning used: route-based service, no contract, weekly maintenance starting at $65/visit.
+- Review package and Catbox image link are saved in `~/.openclaw/workspaces/marlo/memory/2026-03-27.md`.
+
 ## Next Steps
 - [ ] Pool photos / hero images (need from Brandon)
 - [ ] Design polish — the site is functional but visually basic
-- [ ] Grant Vercel GitHub app access to repo for auto-deploy
+- [ ] Wire GitHub Actions → `wrangler deploy` for auto-deploy on push to `main`
 - [ ] Add `Lead` event tracking to Meta Pixel on form submit (already in code, needs testing)
 - [ ] Consider GA4 property via GTM
+
+## Migration Note (2026-05-06)
+Site went down (Cloudflare 530) because Brandon cancelled Vercel. Old DNS pointed at a dead Cloudflare Tunnel CNAME (`c855b409-...cfargotunnel.com`). Migrated stack to Cloudflare Workers via `@opennextjs/cloudflare` adapter:
+1. Bumped `next` from 16.2.1 → 16.2.5 for OpenNext peer-dep compatibility
+2. Added `@opennextjs/cloudflare` + `wrangler` devDeps
+3. Added `wrangler.jsonc`, `open-next.config.ts`, `cf:build/preview/deploy` npm scripts
+4. Deployed worker `poolcleaningdude` with secrets `OPENROUTER_API_KEY` + `ANTHROPIC_API_KEY`
+5. Deleted dead apex/www CNAMEs to `cfargotunnel.com`
+6. Attached apex + www as Workers Custom Domains (auto-creates DNS + SSL)
+7. Verified all 200 (homepage, /contact-us, /areas/wayne-pa, etc.)

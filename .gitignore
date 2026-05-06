@@ -33,8 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
-# vercel
+# vercel (deprecated - migrated to Cloudflare Workers 2026-05-06)
 .vercel
+
+# cloudflare workers / opennext build artifacts
+/.open-next/
+/.wrangler/
 
 # typescript
 *.tsbuildinfo
