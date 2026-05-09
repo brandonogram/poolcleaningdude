@@ -49,6 +49,13 @@ export CLOUDFLARE_ACCOUNT_ID=a674fb068af8a009d9efe474a27b01b1
 npm run cf:build && npm run cf:deploy
 ```
 
+### CI / Deploy
+- Pull requests run `.github/workflows/ci.yml`: `npx tsc --noEmit`, `npm run lint`, `npm run build`, and `npm run cf:build`.
+- Pushes to `main` run `.github/workflows/deploy.yml`: `npm run cf:build`, `npm run cf:deploy`, then `scripts/smoke.sh` against `https://poolcleaningdude.com`.
+- Required GitHub Actions secrets are documented in `docs/CI-SETUP.md`.
+- This configures deploy automation only. Do not run `npm run cf:deploy` unless the task explicitly calls for a real deploy.
+- Reusable template extracted from this PCD pattern: `~/shared-brain/templates/cf-workers-ci/`.
+
 ## Key files
 - `src/lib/config.ts` — site config (phone, address, 22 areas, 6 services, testimonials)
 - `src/lib/schema.ts` — JSON-LD generators (LocalBusiness, Service, Breadcrumb)
@@ -78,7 +85,7 @@ npm run cf:build && npm run cf:deploy
 |---|---|
 | Edit local components/copy | YES (after pool-copy-review pass) |
 | Push to GitHub feature branch | YES |
-| Deploy to Cloudflare (`npm run cf:deploy`) | YES (no GitHub auto-deploy yet — manual via wrangler) |
+| Deploy to Cloudflare (`npm run cf:deploy`) | YES; pushes to `main` now auto-deploy via GitHub Actions after CI passes |
 | Add new area page | YES if pattern matches existing 22 |
 | Change analytics IDs | NO — would lose attribution |
 | Modify GHL contact API | YES locally + deploy |
@@ -93,7 +100,7 @@ npm run cf:build && npm run cf:deploy
 ## Open loops
 - Pool photos / hero images (need from Brandon)
 - Design polish — site is functional but visually basic
-- Wire GitHub Actions → `wrangler deploy` for auto-deploy on push to `main` (currently manual)
+- GitHub Actions auto-deploy is wired on push to `main`; reusable sibling-repo template lives at `~/shared-brain/templates/cf-workers-ci/`
 - Add `Lead` event tracking on form submit (code exists, needs testing)
 - Consider GA4 property via GTM
 - **Marlo created spring lead-gen asset set 2026-03-27** — 1 FB concept with A/B hooks targeting "DIY-Tired Dave," $65/visit no-contract positioning. Saved at `~/.openclaw/workspaces/marlo/memory/2026-03-27.md`. Awaits Brandon GO.
